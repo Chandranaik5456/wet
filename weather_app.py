@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-API_KEY = os.environ['https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608']
+API_KEY = os.environ.get('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608')
 owm = pyowm.OWM(API_KEY)
 mgr=owm.weather_manager()
 
@@ -164,3 +164,103 @@ if __name__ == '__main__':
         else:
             draw_bar_chart()
         updates()
+API_KEY = os.environ.get('OPENWEATHERMAP_API_KEY') 
+
+degree_sign = u'\N{DEGREE SIGN}'
+
+st.title("Weather Information")
+st.write("## Made by Jayvardhan Rathi with ❤️")
+
+st.write("### Write the name of a City and select the Temperature Unit and Graph Type from the sidebar")
+
+place = st.text_input("NAME OF THE CITY :", "")
+
+if place == "":
+    st.warning("Please input a city name!")
+
+unit = st.selectbox("Select Temperature Unit", ("Celsius", "Fahrenheit"))
+g_type = st.selectbox("Select Graph Type", ("Line Graph", "Bar Graph"))
+
+unit_c = 'metric' if unit == 'Celsius' else 'imperial'
+
+def get_weather_data(city):
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units={unit_c}'
+    response = requests.get(url)
+    return response.json()
+
+def plot_temperatures_line(temp_min, temp_max):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=["Min Temp", "Max Temp"], y=[temp_min, temp_max], name='Temperatures'))
+    return fig
+
+def plot_temperatures_bar(temp_min, temp_max):
+    fig = go.Figure(
+        data=[
+            go.Bar(name='Minimum Temperature', x=["Min Temp"], y=[temp_min]),
+            go.Bar(name='Maximum Temperature', x=["Max Temp"], y=[temp_max])
+        ]
+    )
+    fig.update_layout(barmode='group')
+    return fig
+
+def display_weather(city):
+    data = get_weather_data(city)
+    if data.get("cod") != 200:
+        st.error("City not found. Please check the name.")
+        return
+
+    # Extract weather data
+    weather_info = data['weather'][0]
+    main_info = data['main']
+    wind_info = data['wind']
+    cloud_info = data['clouds']
+    sys_info = data['sys']
+
+    temp_min = main_info['temp_min']
+    temp_max = main_info['temp_max']
+    humidity = main_info['humidity']
+    pressure = main_info['pressure']
+    wind_speed = wind_info['speed']
+    cloud_coverage = cloud_info['all']
+    
+    sunrise_timestamp = sys_info['sunrise']
+    sunset_timestamp = sys_info['sunset']
+    
+    # Convert timestamps to human-readable time
+    timezone_offset = data['timezone']
+    sunrise_time = datetime.utcfromtimestamp(sunrise_timestamp + timezone_offset)
+    sunset_time = datetime.utcfromtimestamp(sunset_timestamp + timezone_offset)
+
+    # Display basic weather information
+    st.write(f"### Weather in {city}: {weather_info['main']} - {weather_info['description']}")
+    st.write(f"Temperature: {temp_min}{degree_sign} - {temp_max}{degree_sign}")
+    st.write(f"Humidity: {humidity}%")
+    st.write(f"Pressure: {pressure} hPa")
+    st.write(f"Wind Speed: {wind_speed} m/s")
+    st.write(f"Cloud Coverage: {cloud_coverage}%")
+
+    # Display sunrise and sunset times
+    st.write(f"Sunrise Time: {sunrise_time.strftime('%H:%M:%S')}")
+    st.write(f"Sunset Time: {sunset_time.strftime('%H:%M:%S')}")
+
+    # Plot the temperature data
+    if g_type == "Line Graph":
+        fig = plot_temperatures_line(temp_min, temp_max)
+        st.plotly_chart(fig)
+    elif g_type == "Bar Graph":
+        fig = plot_temperatures_bar(temp_min, temp_max)
+        st.plotly_chart(fig)
+
+def updates(city):
+    data = get_weather_data(city)
+    if 'weather' in data:
+        st.title("Impending Weather Alerts:")
+        # You can use the 'weather' list to check for specific conditions like rain, fog, etc.
+        for weather in data['weather']:
+            if weather['main'].lower() in ['rain', 'storm', 'snow']:
+                st.write(f"### {weather['main']} Alert!")
+
+if __name__ == '__main__':
+    if place:
+        display_weather(place)
+        updates(place)
