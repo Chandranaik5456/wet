@@ -1,23 +1,23 @@
-
 import os
 import streamlit as st
 import requests
 from datetime import datetime
 import plotly.graph_objs as go
 
-# Replace with your actual OpenWeatherMap API key
-API_KEY = os.environ.get('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608')  # Fallback to empty string if not set
+# Directly set the API key (replace with your actual key)
+API_KEY = 'bd5e378503939ddaee76f12ad7a97608'
+
+# Alternatively, set as environment variable:
+# API_KEY = os.environ.get('OPENWEATHERMAP_API_KEY', '')
 
 degree_sign = u'\N{DEGREE SIGN}'
 
 st.title("Weather Information")
-
-
 st.write("### Write the name of a City and select the Temperature Unit and Graph Type")
 
 # Check if API key is provided
 if not API_KEY:
-    st.error("OpenWeatherMap API key is missing. Please set the OPENWEATHERMAP_API_KEY environment variable.")
+    st.error("OpenWeatherMap API key is missing.")
     st.stop()
 
 place = st.text_input("NAME OF THE CITY :", "")
