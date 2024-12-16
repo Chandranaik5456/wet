@@ -6,7 +6,7 @@ from datetime import datetime
 import plotly.graph_objs as go
 
 # Replace with your actual OpenWeatherMap API key
-API_KEY = os.environ.get('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608', '')  # Fallback to empty string if not set
+API_KEY = os.environ.get('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608')  # Fallback to empty string if not set
 
 degree_sign = u'\N{DEGREE SIGN}'
 
