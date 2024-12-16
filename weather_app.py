@@ -11,7 +11,7 @@ API_KEY = os.environ.get('https://api.openweathermap.org/data/2.5/weather?lat=44
 degree_sign = u'\N{DEGREE SIGN}'
 
 st.title("Weather Information")
-st.write("## Made by Jayvardhan Rathi with ❤️")
+
 
 st.write("### Write the name of a City and select the Temperature Unit and Graph Type")
 
