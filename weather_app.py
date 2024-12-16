@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-API_KEY = os.environ['https://api.openweathermap.org/data/2.5/weather?q=bhopal&appid=10aacc1e1487c13fd5abc6b787d6ee98']
+API_KEY = os.environ['https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=bd5e378503939ddaee76f12ad7a97608']
 owm = pyowm.OWM(API_KEY)
 mgr=owm.weather_manager()
 
